@@ -215,3 +215,25 @@ class ThreeLineCircle {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    animator : Animator = new Animator()
+    tlc : ThreeLineCircle = new ThreeLineCircle()
+
+    render(context : CanvasRenderingContext2D) {
+        this.tlc.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.tlc.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.tlc.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
