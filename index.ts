@@ -21,7 +21,7 @@ class ScaleUtil {
     }
 
     static divideScale(scale : number, i : number, n : number) : number {
-        return Math.min(1 / n, ScaleUtil.divideScale(scale, i, n)) * n 
+        return Math.min(1 / n, ScaleUtil.maxScale(scale, i, n)) * n 
     }
 
     static sinify(scale : number) : number {
@@ -32,6 +32,9 @@ class ScaleUtil {
 class DrawingUtil {
 
     static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        if (x1 == x2 && y1 == y2) {
+            return
+        }
         context.beginPath()
         context.moveTo(x1, y1)
         context.lineTo(x2, y2)
@@ -51,7 +54,7 @@ class DrawingUtil {
         const sfj : number = ScaleUtil.divideScale(sf, j * 2, parts)
         for (var i = 0; i < 3; i++) {
             const xStart : number = r * (i % 2) * j 
-            const xUp : number = w - r * (i % 2)
+            const xUp : number = w / 2 - r * (i % 2)
             context.save()
             context.translate(-w / 2 + w / 2 * j, -r + r * i)
             DrawingUtil.drawLine(context, xStart, 0, xStart + xUp * sfj, 0)
@@ -63,10 +66,13 @@ class DrawingUtil {
         const sf : number = ScaleUtil.sinify(scale)
         const sf2 : number = ScaleUtil.divideScale(sf, 1, parts)
         const r : number = Math.min(w, h) / rFactor 
+        context.save()
+        context.translate(w / 2, h / 2)
         for (var j = 0; j < 2; j++) {
             DrawingUtil.drawThreeLine(context, j, r, sf)
         } 
         DrawingUtil.drawCircleFill(context, 0, 0, r, sf2)
+        context.restore()
     }
 
     static drawTLCNode(context : CanvasRenderingContext2D, i : number, scale : number) {
